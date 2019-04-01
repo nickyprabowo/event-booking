@@ -1,0 +1,3 @@
+# event-booking
+
+Event booking app using GraphQL, node, and ...
