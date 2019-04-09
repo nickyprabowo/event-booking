@@ -1,58 +1,20 @@
-const express = require('express')
-const bodyParser = require('body-parser')
-const graphqlHttp = require('express-graphql')
-const { buildSchema } = require('graphql')
-const createEvent = require('./event/controllers/create-event')
+const express = require('express');
+const bodyParser = require('body-parser');
+const graphqlHttp = require('express-graphql');
+const schema = require('./schema');
+const resolvers = require('./resolvers');
 
-const app = express()
+const app = express();
 
-const events = []
-
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
 app.use(
-    '/graphql', 
-    graphqlHttp({
-        schema: buildSchema(`
-            type Event {
-                id: ID!
-                title: String!
-                description: String!
-                price: Int!
-                date: String!
-            }
+  '/graphql',
+  graphqlHttp({
+    schema,
+    rootValue: resolvers,
+    graphiql: true,
+  }),
+);
 
-            input EventInput {
-                title: String!
-                description: String!
-                price: Int!
-                date: String!
-            }
-
-            type RootQuery {
-                events: [Event!]! 
-            }
-
-            type RootMutation {
-                createEvent(eventInput: EventInput): Event
-            }
-
-            schema {
-                query: RootQuery
-                mutation: RootMutation
-            }
-        `),
-        rootValue: {
-            events: () => {
-                return events
-            },
-            createEvent: async args => {
-                const savedEvent = await createEvent(args);
-                return savedEvent;
-            }
-        },
-        graphiql: true
-    })
-)
-
-app.listen(3000)
+app.listen(3000);

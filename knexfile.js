@@ -7,4 +7,5 @@ module.exports = {
     database: 'event-booking',
   },
   debug: true,
+  asyncStackTraces: true
 };
