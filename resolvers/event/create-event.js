@@ -2,14 +2,18 @@ const uuidv1 = require('uuid/v1');
 const knex = require('knex')(require('../../knexfile'));
 const transformEvent = require('./transformEvent');
 
-const createEvent = (req) => {
+const createEvent = (args, req) => {
+  if (!req.isAuth) {
+    throw new Error('Unauthenticated user!');
+  }
+
   const event = {
     id: uuidv1(),
-    title: req.eventInput.title,
-    description: req.eventInput.description,
-    price: req.eventInput.price,
-    date: req.eventInput.date,
-    created_by: req.eventInput.created_by,
+    title: args.eventInput.title,
+    description: args.eventInput.description,
+    price: args.eventInput.price,
+    date: args.eventInput.date,
+    created_by: req.userId,
   };
 
   return knex('events')

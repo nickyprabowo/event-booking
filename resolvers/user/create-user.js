@@ -1,24 +1,7 @@
 const uuidv1 = require('uuid/v1');
 const bcrypt = require('bcryptjs');
-const knex = require('knex')(require('../../knexfile'));
-
-const insertUser = (user) => {
-  return knex('user')
-    .insert(user)
-    .then(() => Promise.resolve({
-      id: user.id,
-      email: user.email,
-    }))
-    .catch(error => Promise.reject(error));
-};
-
-const checkUser = (user) => {
-  return knex('user')
-    .select('*')
-    .where({ email: user.email })
-    .then(result => Promise.resolve(result))
-    .catch(error => Promise.reject(error));
-};
+const insertUser = require('./insert-user');
+const checkUser = require('./check-user');
 
 const createUser = async (req) => {
   const hashedPassword = await bcrypt.hash(req.userInput.password, 12);
@@ -29,8 +12,13 @@ const createUser = async (req) => {
   };
 
   return checkUser(user)
+    // eslint-disable-next-line consistent-return
     .then((check) => {
-      if (!check.length) return insertUser(user);
+      if (!check.length) {
+        const insertedUser = insertUser(user);
+        return insertedUser;
+      }
+      throw new Error('User already exists');
     })
     .then(data => data)
     .catch((error) => {

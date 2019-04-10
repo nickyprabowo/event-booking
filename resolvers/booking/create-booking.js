@@ -2,10 +2,14 @@ const uuidv1 = require('uuid/v1');
 const knex = require('knex')(require('../../knexfile'));
 const transformBooking = require('./transformBooking');
 
-const createBooking = async (args) => {
+const createBooking = async (args, req) => {
+  if (!req.isAuth) {
+    throw new Error('Unauthenticated user!');
+  }
+
   const booking = {
     id: uuidv1(),
-    user: '2d9e4be0-592d-11e9-8ce4-9bc4ce88487c',
+    user: req.userId,
     event: args.eventId,
     created_at: new Date(),
   };
