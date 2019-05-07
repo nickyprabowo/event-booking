@@ -1,0 +1,43 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.main-content {
+  padding: 4rem 2rem;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+button {
+  border: none;
+  border-radius: 3px;
+  padding: 0.5rem 1rem;
+  margin: 0 0 0 0.5rem;
+  cursor: pointer;
+  background: #e3e3e3;
+  font-weight: 600;
+}
+
+button:hover {
+  background: #d5d3d3;
+}
+
+button:active {
+  background: #cac6c6;
+}
+
+button[type="submit"] {
+  background: #bccdf0;
+  color: #234cc4;
+}
+
+button[type="submit"]:hover {
+  background: #5985e3;
+  color: white;
+}
+
+button[type="submit"]:active {
+  background: #4878df;
+  color: white;
+}

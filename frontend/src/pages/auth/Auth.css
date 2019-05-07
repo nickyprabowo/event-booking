@@ -1,0 +1,36 @@
+.auth-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.auth-form {
+    width: 25rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-control {
+    width: 100%;
+    margin: 0.5rem 0;
+}
+
+.form-control label,
+.form-control input {
+    width: 100%;
+    display: block;
+    box-sizing: border-box;
+}
+
+.form-control label {
+    font-weight: 500;
+}
+
+.form-control input {
+    padding: 0.5rem;
+}
+
+.form-actions {
+    align-self: flex-end;
+} 
