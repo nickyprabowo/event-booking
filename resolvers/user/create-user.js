@@ -1,20 +1,19 @@
 const uuidv1 = require('uuid/v1');
 const bcrypt = require('bcryptjs');
 const insertUser = require('./insert-user');
-const checkUser = require('./check-user');
+const getUserByEmail = require('./get-user-by-email');
 
-const createUser = async (req) => {
-  const hashedPassword = await bcrypt.hash(req.userInput.password, 12);
+const createUser = async (args) => {
+  const hashedPassword = await bcrypt.hash(args.userInput.password, 12);
   const user = {
     id: uuidv1(),
-    email: req.userInput.email,
+    email: args.userInput.email,
     password: hashedPassword,
   };
-
-  return checkUser(user)
-    // eslint-disable-next-line consistent-return
+  
+  return getUserByEmail(user.email)
     .then((check) => {
-      if (!check.length) {
+      if (!check) {
         const insertedUser = insertUser(user);
         return insertedUser;
       }

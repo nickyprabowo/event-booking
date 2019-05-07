@@ -1,10 +1,7 @@
-const knex = require('knex')(require('../../knexfile'));
+const Event = require('../../models/event');
 const transformEvent = require('./transformEvent');
 
-const getEventById = id => knex
-  .first('*')
-  .from('events')
-  .where({ id })
+const getEventById = id => Event.getEventById(id)
   .then(event => transformEvent(event))
   .catch((error) => {
     throw new Error(error);

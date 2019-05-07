@@ -1,7 +1,7 @@
-const knex = require('knex')(require('../../knexfile'));
+const User = require('../../models/user');
 
 const getUsers = () => {
-  const users = knex.select('*').from('user');
+  const users = User.getUsers();
 
   return users.map(user => ({
     id: user.id,

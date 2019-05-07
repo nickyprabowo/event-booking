@@ -1,9 +1,6 @@
-const knex = require('knex')(require('../../knexfile'));
+const User = require('../../models/user');
 
-const getUserByEmail = email => knex
-  .first('*')
-  .from('user')
-  .where({ email })
+const getUserByEmail = email => User.getUserBy({ email: email })
   .then(user => user)
   .catch((error) => {
     throw new Error(error);

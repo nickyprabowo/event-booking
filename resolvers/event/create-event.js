@@ -1,6 +1,6 @@
 const uuidv1 = require('uuid/v1');
-const knex = require('knex')(require('../../knexfile'));
 const transformEvent = require('./transformEvent');
+const Event = require('../../models/event');
 
 const createEvent = (args, req) => {
   if (!req.isAuth) {
@@ -16,8 +16,7 @@ const createEvent = (args, req) => {
     created_by: req.userId,
   };
 
-  return knex('events')
-    .insert(event)
+  return Event.insertEvent(event)
     .then(() => transformEvent(event))
     .catch((error) => {
       throw new Error(error);

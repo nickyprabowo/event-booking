@@ -1,9 +1,6 @@
-const knex = require('knex')(require('../../knexfile'));
+const User = require('../../models/user');
 
-const getUserById = id => knex
-  .first('*')
-  .from('user')
-  .where({ id })
+const getUserById = id => User.getUserById(id)
   .then(user => ({
     ...user,
     password: null,
