@@ -36,6 +36,7 @@ module.exports = buildSchema(`
         description: String!
         price: Int!
         date: String!
+        created_by: String!
     }
 
     input UserInput {

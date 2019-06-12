@@ -1,11 +1,15 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
+import { AppContext } from "../../context/auth-context";
+import { RouteComponentProps } from 'react-router-dom';
 import './Auth.css';
 
-interface AuthProps {}
+interface AuthProps extends RouteComponentProps {
+
+}
 
 interface AuthState {
   email: string;
-  password: string;
+  password: string; 
 }
 
 export default class Auth extends Component<AuthProps, AuthState> {
@@ -17,19 +21,22 @@ export default class Auth extends Component<AuthProps, AuthState> {
     }
   }
 
-  handleEmailChange = (e: any) : void => {
+  static contextType = AppContext;
+  context!: React.ContextType<typeof AppContext>;
+
+  handleEmailChange = (e: React.SyntheticEvent<HTMLInputElement>) : void => {
     this.setState({
-      email: e.target.value
+      email: e.currentTarget.value
     });
   }
 
-  handlePasswordChange = (e: any) : void => {
+  handlePasswordChange = (e: React.SyntheticEvent<HTMLInputElement>) : void => {
     this.setState({
-      password: e.target.value
+      password: e.currentTarget.value
     });
   }
 
-  handleRegister = (e: any) => {
+  handleRegister = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     
     const { email, password } = this.state
@@ -65,7 +72,7 @@ export default class Auth extends Component<AuthProps, AuthState> {
     })
   }
 
-  handleSignin = (e: any) => {
+  handleSignin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     const { email, password } = this.state
@@ -92,14 +99,25 @@ export default class Auth extends Component<AuthProps, AuthState> {
       headers: {
         'Content-Type': 'application/json',
       }
-    }).then(res => {
-      if (res.status !== 200 && res.status !== 201) {
-        throw new Error('Failed');
-      }
-      return res.json();
-    }).catch(error => {
-      console.log(error);
     })
+      .then(res => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error('Failed');
+        }
+        return res.json();
+      })
+      .then(resData => {
+        if(this.context){
+          this.context.login(
+            resData.data.login.token, 
+            resData.data.login.userId, 
+            resData.data.login.tokenExpiration
+          );
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      })
   }
   
   render() {

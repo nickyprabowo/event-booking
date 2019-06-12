@@ -1,26 +1,38 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { NavLink } from 'react-router-dom';
+import { ContextConsumer } from "../../context/auth-context";
 import './Navbar.css';
 
 const Navbar = () => (
-    <header className="navbar">
-        <div className="navbar__logo">
-            <h1>Event Booking</h1>
-        </div>
-        <nav className="navbar__items">
-            <ul>
-                <li>
-                    <NavLink to="/auth">Auth</NavLink>
-                </li>
-                <li>
-                    <NavLink to="/events">Events</NavLink>
-                </li>
-                <li>
-                    <NavLink to="/bookings">Bookings</NavLink>
-                </li>
-            </ul>
-        </nav>
-    </header>
+    <ContextConsumer >
+        {(context) => (
+                <header className="navbar">
+                    <div className="navbar__logo">
+                        <h1>Event Booking</h1>
+                    </div>
+                    <nav className="navbar__items">
+                        <ul>
+                            {!context.token && <li>
+                                <NavLink to="/auth">Auth</NavLink>
+                            </li>}
+                            <li>
+                                <NavLink to="/event">Events</NavLink>
+                            </li>
+                            {context.token &&
+                              <Fragment>
+                                <li>
+                                    <NavLink to="/booking">Bookings</NavLink>
+                                </li>
+                                <li>
+                                    <button onClick={context.logout}>Logout</button>
+                                </li>
+                              </Fragment>
+                            }
+                        </ul>
+                    </nav>
+                </header>
+            )}
+    </ContextConsumer>
 )
 
 export default Navbar;

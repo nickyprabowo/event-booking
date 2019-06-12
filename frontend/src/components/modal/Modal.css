@@ -1,0 +1,68 @@
+.overlay {
+	background: rgba(0,0,0,0.6);
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	z-index: 999;
+	display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal {
+	background: white;
+	padding: 1em;
+	margin: 0.5em;
+	width: 400px;
+}
+
+.modal__header,
+.modal__body,
+.modal__footer {
+    padding: 15px;
+}
+
+.modal__footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Overlay Transition */
+
+.overlaying-enter{
+	background: rgba(0,0,0,0);
+	z-index: 0;
+}
+
+.overlaying-enter-active{
+	background: rgba(0,0,0,0.6);
+	z-index: 2;
+	transition: background 300ms ease-in, z-index 300ms ease-in;
+}
+
+.overlaying-exit{
+	background: rgba(0,0,0,0.6);
+	z-index: 2;
+}
+
+.overlaying-exit-active{
+	background: rgba(0,0,0,0);
+	z-index:  -1000;
+	transition: background 300ms ease-out, z-index 100ms ease-out;
+}
+
+/* End of Overlay Transition */
+
+.form__field {
+	margin: 10px 0;
+}
+
+.form__label {
+	margin: 5px 0;
+}
+
+.form__input {
+	width: 100%;
+}

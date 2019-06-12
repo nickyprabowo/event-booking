@@ -6,37 +6,43 @@
     padding: 0 1rem;
     height: 3.5rem;
     width: 100%;
-    background: rgb(226, 43, 150);
+    background: rgb(47, 47, 47);
     align-items: center;
+    justify-content: space-between;
 }
 
 .navbar__logo h1{
     margin: 0;
     font-size: 1.5rem;
+    color: #e0bc05;
 }
 
 .navbar__items {
-    margin-left: 1.5rem;
+    margin: 0 1.5rem;
 }
 
 .navbar__items > ul {
     display: flex;
+    align-items: center;
     list-style: none;
     margin: 0;
     padding: 0;
 }
 
 .navbar__items li {
-    margin: 0 1rem;
+    margin: 0 0.5rem;
 }
 
 .navbar__items li a {
     text-decoration: none;
-    color: #000000;
+    color: #e0bc05;
+    padding: 0.2em 0.7em;
 }
 
 .navbar__items li a:hover,
 .navbar__items li a:active,
 .navbar__items li a.active {
-    color: rgb(240, 220, 228);
-}
+    background: #e0bc05;
+    color: #2f2f2f;
+    border-radius: 5px;
+}   

@@ -1,0 +1,30 @@
+.input-event {
+    text-align: center;
+}
+
+.events-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+ul.events-list li {
+    width: 300px;
+    border: 1px solid black;
+    margin: 1em 0 0 0;
+    padding: 0.5em;
+    background: #323232;
+    color: #e4e4e4;
+}
+
+ul.events-list li .title {
+    margin: 0;
+    color: #ecd010;
+}

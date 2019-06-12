@@ -13,7 +13,7 @@ const createEvent = (args, req) => {
     description: args.eventInput.description,
     price: args.eventInput.price,
     date: args.eventInput.date,
-    created_by: req.userId,
+    created_by: args.eventInput.created_by,
   };
 
   return Event.insertEvent(event)
