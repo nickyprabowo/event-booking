@@ -3,39 +3,54 @@ import React, { Component, Fragment } from 'react';
 import { AppContext } from "../../context/auth-context";
 import moment from "moment";
 
-import Modal from "../../components/modal/Modal";
+import Spinner from "../../components/spinner/Spinner";
 import AddEvent from "./AddEvent";
+import EventItem from "./EventItem";
+import EventDetail from "./EventDetail";
+import ReactPaginate from "react-paginate";
 
 import "./Event.css";
 
 interface events {
+    id: string,
     title: string,
     price: number,
     description: string,
-    date: string
+    date: string,
+    creator: {
+        id: string
+    }
 }
 
 interface eventProps{}
 
 interface eventState {
-    modalOpen: boolean,
+    addEvent: boolean,
+    detailEvent: boolean,
+    selectedEvent: object,
     events: Array<events>,
     title: string,
-    price: string,
+    price: number,
     description: string,
-    date: string
+    date: string,
+    page: number,
+    loading: boolean
 }
 
 export default class Event extends Component<eventProps, eventState> {
     constructor(props: eventProps){
         super(props)
         this.state = {
-            modalOpen: false,
+            addEvent: false,
+            detailEvent: false,
+            selectedEvent: {},
             events: [],
             title: "",
-            price: "",
+            price: 0,
             description: "",
-            date: ""
+            date: "",
+            page: 1,
+            loading: false
         };
     }
 
@@ -44,18 +59,39 @@ export default class Event extends Component<eventProps, eventState> {
 
 
     componentDidMount = () => {
-        this.getEvents();
+        const { page } = this.state;
+        this.getEvents(page);
     }
 
-    openModal = () => {
+    onAddEvent = () => {
         this.setState({
-            modalOpen: true
+            addEvent: true
         })
     }
 
-    closeModal = () => {
+    onDismissAddEvent = () => {
         this.setState({
-            modalOpen: false
+            addEvent: false,
+            title: "",
+            price: 0,
+            description: "",
+            date: ""
+        })
+    }
+
+    onToggleDetailEvent = () => {
+        this.setState((prevState) => ({
+            detailEvent: !prevState.detailEvent
+        }))
+    }
+
+    fetchDetail = (id: string) => {
+        this.getEventById(id);
+    }
+
+    handlePagination = (page: { selected: number }) => {
+        this.setState({
+            page: page.selected
         })
     }
 
@@ -67,12 +103,21 @@ export default class Event extends Component<eventProps, eventState> {
         });
     }
 
-    onSubmit = (e: React.MouseEvent<HTMLInputElement>) => {
+    onSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
 
-        const { title, price, date, description } = this.state;
+        const { title, price, date, description, page } = this.state;
         const { token, userId } = this.context;
         const datetime = moment(date).format("YYYY-MM-DD HH:mm:ss");
+        // check if empty
+        if(
+            title.trim().length === 0 ||
+            datetime === "Invalid date" ||
+            description.trim().length === 0 ||
+            userId.trim().length === 0
+        ) {
+            return;
+        }
         
         const request = {
             query: `
@@ -84,7 +129,7 @@ export default class Event extends Component<eventProps, eventState> {
                 }
             `
         }
-        console.log(request);
+        
         fetch('http://localhost:8000/graphql', {
             method: 'POST',
             body: JSON.stringify(request),
@@ -100,13 +145,51 @@ export default class Event extends Component<eventProps, eventState> {
             return res.json();
         })
         .then(() => {
+            this.onDismissAddEvent();
+            this.getEvents(page);
+        })
+        .catch(error => {
+            console.log(error);
+        })
+    }
+
+    getEvents = (page: number) => {
+        this.setState({
+            loading: true
+        })
+        const request = {
+            query: `
+                query getAllEvents {
+                    events(page: ${page}) {
+                        id
+                        title
+                        price
+                        date
+                        creator {
+                            id
+                        }
+                    }
+                }
+            `
+        }
+
+        fetch('http://localhost:8000/graphql', {
+            method: 'POST',
+            body: JSON.stringify(request),
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(res => {
+            if (res.status !== 200 && res.status !== 201) {
+                throw new Error('Failed');
+            }
+            return res.json();
+        })
+        .then(({ data: result }) => {
             this.setState({
-                modalOpen: false,
-                events: [],
-                title: "",
-                price: "",
-                description: "",
-                date: ""
+                events: result.events,
+                loading: false
             })
         })
         .catch(error => {
@@ -114,18 +197,17 @@ export default class Event extends Component<eventProps, eventState> {
         })
     }
 
-    getEvents = () => {
+    getEventById = (id: string) => {
         const request = {
             query: `
-                query {
-                    events {
+                query getSpecificEvent {
+                    getEventById(id: "${id}") {
                         id
                         title
                         description
                         price
-                        date,
+                        date
                         creator {
-                            id
                             email
                         }
                     }
@@ -146,10 +228,13 @@ export default class Event extends Component<eventProps, eventState> {
             }
             return res.json();
         })
-        .then(events => {
+        .then(({data: event}) => {
             this.setState({
-                events: events.data.events
-            })
+                selectedEvent: {
+                    ...event.getEventById,
+                    creator: event.getEventById.creator.email
+                }
+            }, () => this.onToggleDetailEvent())
         })
         .catch(error => {
             console.log(error);
@@ -157,36 +242,66 @@ export default class Event extends Component<eventProps, eventState> {
     }
 
     render(){
-        const { modalOpen, events } = this.state;
+        const { addEvent, detailEvent, events, page, loading, selectedEvent } = this.state;
+        const { userId } = this.context;
+
         return (
             <Fragment>
                 {this.context.token &&
                     <div className="input-event">
                         <p>Share your events to others</p>
-                        <button onClick={this.openModal}>Add Event</button>
+                        <button onClick={this.onAddEvent}>Add Event</button>
                     </div>
                 }
-                <Modal
-                    isActive={modalOpen}
-                    onClose={this.closeModal}
-                    onSubmit={this.onSubmit}
-                    render={(props) => 
-                        <AddEvent
-                            handleChange={this.handleInputChange}
-                            {...props}
+                {addEvent &&
+                    <AddEvent
+                        show={addEvent}
+                        onClose={this.onDismissAddEvent}
+                        handleChange={this.handleInputChange}
+                        onSubmit={this.onSubmit}
+                    />
+                }
+                {detailEvent &&
+                    <EventDetail 
+                        show={detailEvent}
+                        onClose={this.onToggleDetailEvent}
+                        event={selectedEvent}
+                    />
+                }
+                {loading && <Spinner />}
+                {events.length === 0 &&
+                    <div className="centered">No events available</div>
+                }
+                {events.length > 0 &&
+                    <Fragment>
+                        <ul className="events-list">
+                            {events.map((event: events) => (
+                                <EventItem
+                                    key={event.id}
+                                    title={event.title}
+                                    price={event.price}
+                                    date={event.date}
+                                    creator={event.creator.id}
+                                    userId={userId}
+                                    eventId={event.id}
+                                    onDetail={this.fetchDetail.bind(this, event.id)}
+                                />
+                            ))}
+                        </ul>
+                        <ReactPaginate
+                            previousLabel={'previous'}
+                            nextLabel={'next'}
+                            breakLabel={'...'}
+                            breakClassName={'break-me'}
+                            pageCount={page}
+                            marginPagesDisplayed={2}
+                            pageRangeDisplayed={5}
+                            onPageChange={this.handlePagination}
+                            containerClassName={'pagination'}
+                            activeClassName={'active'}
                         />
-                    }
-                />
-                <ul className="events-list">
-                    {events.map( event => {
-                        return (
-                            <li>
-                                <h4 className="title"><b>{event.title}</b></h4>
-                                <span>Rp {event.price} - {moment(event.date).format("D MMM YYYY")}</span>
-                            </li>
-                        )
-                    })}
-                </ul>
+                    </Fragment>
+                }
             </Fragment>
         );
     }

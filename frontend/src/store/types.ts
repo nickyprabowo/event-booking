@@ -1,0 +1,1 @@
+export enum asyncState {"idle", "loading", "loaded", "error"};

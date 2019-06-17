@@ -9,8 +9,7 @@ import "./Modal.css";
 interface modalProps {
     isActive: boolean,
 	onClose(): void,
-	onSubmit(e: any): void,
-	render: (props: object) => ReactNode
+	children?: any
 };
 
 interface modalState {
@@ -50,7 +49,7 @@ class Modal extends Component<modalProps, modalState> {
 	}
 
 	render(){
-		const { isActive, onClose, render } = this.props;
+		const { isActive, onClose, children } = this.props;
 
 		if(isActive){
 			return (
@@ -58,7 +57,7 @@ class Modal extends Component<modalProps, modalState> {
 					<Fragment>
 						<div className="overlay" onClick={onClose}>
 							<div className="modal" onClick={this.preventClose}>
-							    {render(this.props)}
+							    {children}
 							</div>
 						</div>
 					</Fragment>,

@@ -1,14 +1,19 @@
 import React, { Fragment } from 'react';
+import Modal from "../../components/modal/Modal";
 
 interface AddEvent {
-    onClose?: () => void,
-    onSubmit?: () => void,
-    handleChange: (e: React.FormEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => void
+    show: boolean,
+    onClose(): void,
+    onSubmit(e: React.MouseEvent<HTMLButtonElement>): void,
+    handleChange(e: React.FormEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>): void
 }
 
 export default function AddEvent(props: AddEvent) {
     return (
-        <Fragment>
+        <Modal
+            isActive={props.show}
+            onClose={props.onClose}
+        >
             <div className="modal__body">
                 <form>
                     <div className="form-control">
@@ -33,6 +38,6 @@ export default function AddEvent(props: AddEvent) {
                 <button onClick={props.onClose}>Cancel</button>
                 <button type="submit" onClick={props.onSubmit}>Save</button>
             </div>
-        </Fragment>
+        </Modal>
     )
 };

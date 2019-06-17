@@ -9,9 +9,13 @@ module.exports = buildSchema(`
         updated_at: String!
     }
 
+    "A type that describes the user"
     type User {
+        "should have an ID which is UUID"
         id: ID!
+        "should have a valid email"
         email: String!
+        "should have a password encrypted by bcrypt"
         password: String
         createdEvents: [Event!]
     }    
@@ -31,6 +35,10 @@ module.exports = buildSchema(`
         tokenExpiration: Int!
     }
 
+    input EventQuery {
+        id: ID
+    }
+
     input EventInput {
         title: String!
         description: String!
@@ -45,7 +53,8 @@ module.exports = buildSchema(`
     }
 
     type RootQuery {
-        events: [Event!]!
+        events(page: Int): [Event!]!
+        getEventById(id: String!): Event!
         bookings: [Booking!]!
         users: [User!]!
         login(email: String!, password: String!): AuthData!
