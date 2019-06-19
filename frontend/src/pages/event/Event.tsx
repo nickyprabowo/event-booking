@@ -27,14 +27,15 @@ interface eventProps{}
 interface eventState {
     addEvent: boolean,
     detailEvent: boolean,
-    selectedEvent: object,
+    selectedEvent: any,
     events: Array<events>,
     title: string,
     price: number,
     description: string,
     date: string,
     page: number,
-    loading: boolean
+    loading: boolean,
+    totalPage: number
 }
 
 export default class Event extends Component<eventProps, eventState> {
@@ -49,8 +50,9 @@ export default class Event extends Component<eventProps, eventState> {
             price: 0,
             description: "",
             date: "",
-            page: 1,
-            loading: false
+            page: 0,
+            loading: false,
+            totalPage: 0
         };
     }
 
@@ -92,7 +94,7 @@ export default class Event extends Component<eventProps, eventState> {
     handlePagination = (page: { selected: number }) => {
         this.setState({
             page: page.selected
-        })
+        }, () => this.getEvents(page.selected))
     }
 
     handleInputChange = (e: React.FormEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -160,14 +162,16 @@ export default class Event extends Component<eventProps, eventState> {
         const request = {
             query: `
                 query getAllEvents {
-                    events(page: ${page}) {
-                        id
-                        title
-                        price
-                        date
-                        creator {
-                            id
+                    allEvents(page: ${page}) {
+                        events {id
+                            title
+                            price
+                            date
+                            creator {
+                                id
+                            }
                         }
+                        total
                     }
                 }
             `
@@ -188,7 +192,8 @@ export default class Event extends Component<eventProps, eventState> {
         })
         .then(({ data: result }) => {
             this.setState({
-                events: result.events,
+                events: result.allEvents.events,
+                totalPage: result.allEvents.total,
                 loading: false
             })
         })
@@ -241,8 +246,60 @@ export default class Event extends Component<eventProps, eventState> {
         })
     }
 
+    bookEvent = (e: React.MouseEvent<HTMLButtonElement>) => {
+        if(!this.context.token) {
+            this.onToggleDetailEvent()
+            return;
+        }
+
+        this.setState({
+            loading: true
+        })
+
+        const { token, userId } = this.context;
+        const eventId = this.state.selectedEvent ? this.state.selectedEvent.id : 0
+
+        const request = {
+            query: `
+                mutation bookEvent {
+                    createBooking(eventId: "${eventId}", userId: "${userId}") {
+                        id
+                        event {
+                            id
+                            title
+                        }
+                        created_at
+                    }
+                }
+            `
+        }
+
+        fetch('http://localhost:8000/graphql', {
+            method: 'POST',
+            body: JSON.stringify(request),
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+        })
+        .then(res => {
+            if (res.status !== 200 && res.status !== 201) {
+                throw new Error('Failed');
+            }
+            return res.json();
+        })
+        .then(({data: event}) => {
+            this.setState({
+                loading: false
+            }, () => this.onToggleDetailEvent())
+        })
+        .catch(error => {
+            console.log(error);
+        })
+    }
+
     render(){
-        const { addEvent, detailEvent, events, page, loading, selectedEvent } = this.state;
+        const { addEvent, detailEvent, events, loading, selectedEvent, totalPage } = this.state;
         const { userId } = this.context;
 
         return (
@@ -266,6 +323,7 @@ export default class Event extends Component<eventProps, eventState> {
                         show={detailEvent}
                         onClose={this.onToggleDetailEvent}
                         event={selectedEvent}
+                        onBook={this.bookEvent}
                     />
                 }
                 {loading && <Spinner />}
@@ -293,9 +351,9 @@ export default class Event extends Component<eventProps, eventState> {
                             nextLabel={'next'}
                             breakLabel={'...'}
                             breakClassName={'break-me'}
-                            pageCount={page}
+                            pageCount={totalPage}
                             marginPagesDisplayed={2}
-                            pageRangeDisplayed={5}
+                            pageRangeDisplayed={3}
                             onPageChange={this.handlePagination}
                             containerClassName={'pagination'}
                             activeClassName={'active'}

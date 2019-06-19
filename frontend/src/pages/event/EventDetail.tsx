@@ -6,6 +6,7 @@ import Modal from "../../components/modal/Modal";
 interface EventDetailProps {
     show: boolean,
     onClose(): void,
+    onBook(e: React.MouseEvent<HTMLButtonElement>): void,
     event: {
         id?: string,
         title?: string,
@@ -27,6 +28,10 @@ const EventDetail = (props: EventDetailProps) => {
                 <p>{`Rp ${props.event.price} - ${moment(props.event.date).format("D MMM YYYY HH:mm:ss")}`}</p>
                 <p>Created by - {props.event.creator}</p>
                 <p>{props.event.description}</p>
+                <div>
+                    <button onClick={props.onClose}>Cancel</button>
+                    <button onClick={props.onBook}>Book</button>
+                </div>
             </div>
         </Modal>
     )

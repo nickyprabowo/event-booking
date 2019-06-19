@@ -19,7 +19,8 @@ const EventItem = (props: eventItem) => {
                 <span className="meta">Rp {props.price} - {moment(props.date).format("D MMM YYYY")}</span>
             </div>
             <div>
-                {props.userId === props.creator ? <p>You're the owner</p> : <button onClick={() => props.onDetail(props.eventId)}>View Detail</button>}
+                <button onClick={() => props.onDetail(props.eventId)}>View Detail</button>
+                {props.userId === props.creator && <p style={{ margin: 0 }}>You're the owner</p>}
             </div>
         </li>
     )

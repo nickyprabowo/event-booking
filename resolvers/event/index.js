@@ -3,7 +3,7 @@ const getEventById = require('./get-event-by-id');
 const createEvent = require('./create-event');
 
 module.exports = {
-  events: getEvents,
+  allEvents: getEvents,
   getEventById,
   createEvent,
 };

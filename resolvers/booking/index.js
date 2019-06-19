@@ -4,6 +4,6 @@ const cancelBooking = require('./cancel-booking');
 
 module.exports = {
   createBooking,
-  bookings: getBookings,
+  allBookings: getBookings,
   cancelBooking,
 };

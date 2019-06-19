@@ -9,7 +9,7 @@ const createBooking = async (args, req) => {
 
   const booking = {
     id: uuidv1(),
-    user: req.userId,
+    user: args.userId,
     event: args.eventId,
     created_at: new Date(),
   };

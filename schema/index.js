@@ -9,6 +9,11 @@ module.exports = buildSchema(`
         updated_at: String!
     }
 
+    type BookingList {
+        bookings: [Booking!]!
+        total: Int!
+    }
+
     "A type that describes the user"
     type User {
         "should have an ID which is UUID"
@@ -27,6 +32,11 @@ module.exports = buildSchema(`
         price: Int!
         date: String!
         creator: User!
+    }
+
+    type EventList {
+        events: [Event!]!
+        total: Int!
     }
 
     type AuthData {
@@ -53,9 +63,9 @@ module.exports = buildSchema(`
     }
 
     type RootQuery {
-        events(page: Int): [Event!]!
+        allEvents(page: Int): EventList!
         getEventById(id: String!): Event!
-        bookings: [Booking!]!
+        allBookings(page: Int, userId: String!): BookingList!
         users: [User!]!
         login(email: String!, password: String!): AuthData!
     }
@@ -63,7 +73,7 @@ module.exports = buildSchema(`
     type RootMutation {
         createEvent(eventInput: EventInput): Event
         createUser(userInput: UserInput): User
-        createBooking(eventId: ID!): Booking!
+        createBooking(eventId: ID!, userId:ID!): Booking!
         cancelBooking(bookingId: ID!): Event!
     }
 
