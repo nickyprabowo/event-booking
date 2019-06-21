@@ -1,14 +1,9 @@
-const knex = require('knex')(require('../../knexfile'));
-const getBookingById = require('./get-booking-by-id');
+const Booking = require('../../models/booking');
 const getEventById = require('../event/get-event-by-id');
 
-const cancelBooking = async (args) => {
-  const booking = await getBookingById(args.bookingId);
-
-  return knex('booking')
-    .where({ id: args.bookingId })
-    .del()
-    .then(() => getEventById(booking.event))
+const cancelBooking = (args) => {
+  return Booking.cancelBooking({id: args.bookingId})
+    .then(() => true)
     .catch((error) => {
       throw new Error(error);
     });

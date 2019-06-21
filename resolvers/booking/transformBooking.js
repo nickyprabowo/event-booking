@@ -2,7 +2,6 @@ const getEventById = require('../event/get-event-by-id');
 const getUserById = require('../user/get-user-by-id');
 
 const transformBooking = (booking) => {
-  console.log(booking);
   return {
     ...booking,
     event: getEventById({id: booking.event}),

@@ -22,7 +22,6 @@ module.exports = buildSchema(`
         email: String!
         "should have a password encrypted by bcrypt"
         password: String
-        createdEvents: [Event!]
     }    
 
     type Event {
@@ -66,6 +65,7 @@ module.exports = buildSchema(`
         allEvents(page: Int): EventList!
         getEventById(id: String!): Event!
         allBookings(page: Int, userId: String!): BookingList!
+        getBookingById(id: String!): Booking!
         users: [User!]!
         login(email: String!, password: String!): AuthData!
     }
@@ -74,7 +74,7 @@ module.exports = buildSchema(`
         createEvent(eventInput: EventInput): Event
         createUser(userInput: UserInput): User
         createBooking(eventId: ID!, userId:ID!): Booking!
-        cancelBooking(bookingId: ID!): Event!
+        cancelBooking(bookingId: ID!): Boolean
     }
 
     schema {

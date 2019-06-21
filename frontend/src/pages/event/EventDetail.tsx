@@ -29,7 +29,7 @@ const EventDetail = (props: EventDetailProps) => {
                 <p>Created by - {props.event.creator}</p>
                 <p>{props.event.description}</p>
                 <div>
-                    <button onClick={props.onClose}>Cancel</button>
+                    <button onClick={props.onClose}>Close</button>
                     <button onClick={props.onBook}>Book</button>
                 </div>
             </div>
