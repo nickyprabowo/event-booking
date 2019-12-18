@@ -1,3 +1,11 @@
 # event-booking
+CRUD for booking an event
 
-Event booking app using GraphQL on top of NodeJS, express, and MySQL. I also try to implement typescript with ReactJS to build for the App.
+Stacks
+1. NodeJS
+2. GraphQL
+3. KnexJS
+4. MySQL
+5. React
+6. TypeScript
+
